@@ -1,0 +1,33 @@
+{
+    "name": "likeplatform/webhooks",
+    "description": "Package de webhooks salientes y entrantes para LikePlatform",
+    "type": "library",
+    "license": "MIT",
+    "version": "0.1.0-dev",
+    "require": {
+        "php": "^8.4",
+        "likeplatform/contracts": "^0.1.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.0",
+        "orchestra/testbench": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LikePlatform\\Webhooks\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LikePlatform\\Webhooks\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LikePlatform\\Webhooks\\Providers\\WebhooksServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
