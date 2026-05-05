@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace LikePlatform\Webhooks\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use LikePlatform\Contracts\Webhooks\WebhookDispatcherContract;
+use LikePlatform\Contracts\Webhooks\WebhookEventContract;
+use LikePlatform\Contracts\Webhooks\WebhookReceiverContract;
+use LikePlatform\Webhooks\Contracts\WebhookDispatcher;
+use LikePlatform\Webhooks\Contracts\WebhookReceiver;
 
-/**
- * Service provider for the LikePlatform Webhooks package.
- *
- * Registers routes, migrations, config, and translations.
- * Binds contract implementations in the container.
- */
 class WebhooksServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -19,6 +18,9 @@ class WebhooksServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../../config/webhooks.php', 'likeplatform-webhooks'
         );
+
+        $this->app->bind(WebhookDispatcherContract::class, WebhookDispatcher::class);
+        $this->app->bind(WebhookReceiverContract::class, WebhookReceiver::class);
     }
 
     public function boot(): void
