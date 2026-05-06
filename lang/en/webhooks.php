@@ -37,4 +37,8 @@ return [
     'deleted_successfully' => 'Webhook endpoint deleted successfully.',
     'enabled_successfully' => 'Webhook endpoint enabled.',
     'disabled_successfully' => 'Webhook endpoint disabled.',
+    'retry' => 'Retry',
+    'retry_successful' => 'Delivery retried successfully. Status: :status',
+    'retry_failed' => 'Retry failed: :error',
+    'retry_endpoint_inactive' => 'Cannot retry delivery: endpoint is inactive.',
 ];

@@ -37,4 +37,8 @@ return [
     'deleted_successfully' => 'Endpoint de webhook eliminado exitosamente.',
     'enabled_successfully' => 'Endpoint de webhook activado.',
     'disabled_successfully' => 'Endpoint de webhook desactivado.',
+    'retry' => 'Reintentar',
+    'retry_successful' => 'Entrega reintentada exitosamente. Estado: :status',
+    'retry_failed' => 'Reintento fallido: :error',
+    'retry_endpoint_inactive' => 'No se puede reintentar: el endpoint esta inactivo.',
 ];

@@ -79,6 +79,7 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('likeplatform-webhooks::webhooks.duration') }}</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('likeplatform-webhooks::webhooks.attempt') }}</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('likeplatform-webhooks::webhooks.sent_at') }}</th>
+                                <th scope="col" class="relative px-6 py-3"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
@@ -100,9 +101,19 @@
                                     <td class="whitespace-nowrap px-6 py-3.5 text-sm text-gray-500 dark:text-gray-400">
                                         {{ $delivery->attempt }}
                                     </td>
-                                    <td class="whitespace-nowrap px-6 py-3.5 text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $delivery->created_at->diffForHumans() }}
-                                    </td>
+                                        <td class="whitespace-nowrap px-6 py-3.5 text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $delivery->created_at->diffForHumans() }}
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-3.5 text-right text-sm">
+                                            @if($delivery->hasFailed())
+                                                <form method="POST" action="{{ route('webhooks.retry', $delivery->id) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+                                                        {{ __('likeplatform-webhooks::webhooks.retry') }}
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                 </tr>
                             @endforeach
                         </tbody>

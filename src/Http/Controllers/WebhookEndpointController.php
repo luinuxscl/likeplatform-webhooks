@@ -6,8 +6,9 @@ namespace LikePlatform\Webhooks\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
+use LikePlatform\Webhooks\Models\WebhookDelivery;
 use LikePlatform\Webhooks\Models\WebhookEndpoint;
 use Illuminate\Support\Str;
 
@@ -94,5 +95,52 @@ class WebhookEndpointController extends Controller
 
         return redirect()->route('webhooks.index')
             ->with('success', __('likeplatform-webhooks::webhooks.deleted_successfully'));
+    }
+
+    /**
+     * Manually retry a failed webhook delivery.
+     */
+    public function retryDelivery(Request $request, int $id): RedirectResponse
+    {
+        $delivery = WebhookDelivery::with('endpoint')
+            ->whereHas('endpoint', fn ($q) => $q->where('user_id', $request->user()->id))
+            ->findOrFail($id);
+
+        $endpoint = $delivery->endpoint;
+
+        if (!$endpoint || !$endpoint->is_active) {
+            return back()->with('error', __('likeplatform-webhooks::webhooks.retry_endpoint_inactive'));
+        }
+
+        $attempt = $delivery->attempt + 1;
+        $start = microtime(true);
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'X-LikePlatform-Event' => $delivery->event,
+                    'X-LikePlatform-Signature' => hash_hmac('sha256', json_encode($delivery->payload), (string) $endpoint->secret),
+                ])
+                ->post($endpoint->url, $delivery->payload);
+
+            $delivery->update([
+                'response_status' => $response->status(),
+                'response_body' => mb_substr((string) $response->body(), 0, 5000),
+                'duration_ms' => (int) ((microtime(true) - $start) * 1000),
+                'attempt' => $attempt,
+                'error' => null,
+            ]);
+
+            $endpoint->update(['last_sent_at' => now()]);
+
+            return back()->with('success', __('likeplatform-webhooks::webhooks.retry_successful', ['status' => $response->status()]));
+        } catch (\Throwable $e) {
+            $delivery->update([
+                'attempt' => $attempt,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', __('likeplatform-webhooks::webhooks.retry_failed', ['error' => $e->getMessage()]));
+        }
     }
 }

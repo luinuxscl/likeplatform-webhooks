@@ -11,5 +11,6 @@ Route::middleware(['web', 'auth', 'verified'])->prefix('webhooks')->name('webhoo
     Route::post('/', [WebhookEndpointController::class, 'store'])->name('store');
     Route::get('/{id}', [WebhookEndpointController::class, 'show'])->name('show');
     Route::post('/{id}/toggle', [WebhookEndpointController::class, 'toggle'])->name('toggle');
+    Route::post('/delivery/{id}/retry', [WebhookEndpointController::class, 'retryDelivery'])->name('retry');
     Route::delete('/{id}', [WebhookEndpointController::class, 'destroy'])->name('destroy');
 });
